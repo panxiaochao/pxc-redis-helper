@@ -6,25 +6,179 @@
 	<artifactId>pxc-redis-helper</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
-
 	<name>pxc-redis-helper</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/panxiaochao/pxc-redis-helper</url>
 	<description>pxc-redis-helper is a redis tools</description>
-
 
 	<properties>
 		<webVersion>3.0</webVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.7</java.version>
+		<commons.lang3.version>3.8.1</commons.lang3.version>
+		<jredis.version>2.9.0</jredis.version>
+		<spring.version>4.3.24.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>
+		<!-- spring核心包 -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<!-- commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang3.version}</version>
+		</dependency>
+		<!-- jredis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jredis.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<!-- log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>1.7.26</version>
 		</dependency>
 	</dependencies>
+
+	<!-- licenses -->
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<!-- scm -->
+	<scm>
+		<tag>master</tag>
+		<url>https://github.com/panxiaochao/pxc-redis-helper.git</url>
+		<connection>scm:git:https://github.com/panxiaochao/pxc-redis-helper.git</connection>
+		<developerConnection>scm:git:https://github.com/panxiaochao/pxc-redis-helper.git</developerConnection>
+	</scm>
+	<!-- ossrh -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	<!-- 开发者 -->
+	<developers>
+		<developer>
+			<name>panxiaochao</name>
+			<email>545685602@qq.com</email>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
+
+	<build>
+		<plugins>
+			<!-- 编译环境 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+				<!-- <dependencies> <dependency> <groupId>org.codehaus.plexus</groupId> 
+					<artifactId>plexus-compiler-javac</artifactId> <version>2.8.5</version> </dependency> 
+					</dependencies> -->
+			</plugin>
+
+			<!-- 生成sources源码包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<attach>true</attach>
+					<charset>${project.build.sourceEncoding}</charset>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<docencoding>${project.build.sourceEncoding}</docencoding>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- 生成javadoc文档包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<charset>${project.build.sourceEncoding}</charset>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<docencoding>${project.build.sourceEncoding}</docencoding>
+					<!-- TODO 临时解决不规范的javadoc生成报错,后面要规范化后把这行去掉 -->
+					<!-- <additionalparam>-Xdoclint:none</additionalparam> -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!-- GPG 打包插件 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- 发布工具 nexus-staging-maven-plugin，自动进行close操作，省去到平台上点击close <plugin> 
+						<groupId>org.sonatype.plugins</groupId> <artifactId>nexus-staging-maven-plugin</artifactId> 
+						<version>1.6.8</version> <extensions>true</extensions> <configuration> <serverId>ossrh</serverId> 
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl> <autoReleaseAfterClose>true</autoReleaseAfterClose> 
+						</configuration> </plugin> -->
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
