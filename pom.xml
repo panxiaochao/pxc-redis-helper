@@ -4,7 +4,7 @@
 
 	<groupId>com.github.panxiaochao</groupId>
 	<artifactId>pxc-redis-helper</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 	<name>pxc-redis-helper</name>
 	<url>https://github.com/panxiaochao/pxc-redis-helper</url>

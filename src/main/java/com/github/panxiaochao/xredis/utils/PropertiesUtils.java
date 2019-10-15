@@ -39,7 +39,7 @@ public class PropertiesUtils {
 					}
 					PROPERTIES_MAPPING.putAll(property);
 				}
-				//showKeysAndValues(PROPERTIES_MAPPING);
+				// showKeysAndValues(PROPERTIES_MAPPING);
 			}
 		} catch (Exception e) {
 			log.error("load pxc-redis.properties error", e);

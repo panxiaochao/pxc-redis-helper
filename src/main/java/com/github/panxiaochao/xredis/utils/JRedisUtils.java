@@ -12,12 +12,16 @@ public class JRedisUtils {
 	// Redis服务器IP
 	private static String ADDR = PropertiesUtils.getString("redis.addr");
 	// Redis的端口号
-	private static int PORT = PropertiesUtils.getInteger("redis.port");
-	private static int MaxTotal = PropertiesUtils.getInteger("redis.maxTotal");
-	private static int MaxWait = PropertiesUtils.getInteger("redis.maxWait");
-	private static int MaxIdle = PropertiesUtils.getInteger("redis.maxIdle");
+	private static Integer PORT = PropertiesUtils.getInteger("redis.port");
+	private static Integer MaxTotal = PropertiesUtils.getInteger("redis.maxTotal");
+	private static Integer MaxWait = PropertiesUtils.getInteger("redis.maxWait");
+	private static Integer MaxIdle = PropertiesUtils.getInteger("redis.maxIdle");
 	// 单位是秒，默认10分钟
-	public static int EXPIRE = PropertiesUtils.getInteger("redis.expire");
+	public static Integer EXPIRE = PropertiesUtils.getInteger("redis.expire");
+	// password
+	public static String PASSWORD = PropertiesUtils.getString("redis.password");
+	// dbIndex
+	public static Integer DBINDEX = PropertiesUtils.getInteger("redis.dbIndex");
 
 	static {
 		initPool();
@@ -27,7 +31,15 @@ public class JRedisUtils {
 		try {
 			if (jedisPool == null) {
 				// 初始化非切片池
-				jedisPool = new JedisPool(getJedisPoolConfig(), ADDR, PORT, MaxWait);
+				if (PASSWORD == null) {
+					jedisPool = new JedisPool(getJedisPoolConfig(), ADDR, PORT, MaxWait);
+				} else {
+					if (DBINDEX == null) {
+						jedisPool = new JedisPool(getJedisPoolConfig(), ADDR, PORT, MaxWait, PASSWORD);
+					} else {
+						jedisPool = new JedisPool(getJedisPoolConfig(), ADDR, PORT, MaxWait, PASSWORD, DBINDEX);
+					}
+				}
 			}
 		} catch (Exception e) {
 			log.error(e);
