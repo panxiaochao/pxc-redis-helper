@@ -61,24 +61,24 @@ public class PropertiesUtils {
 		}
 	}
 
-	public static Boolean getBoolean(String key) {
+	public static boolean getBoolean(String key) {
 		String property = PROPERTIES_MAPPING.getProperty(key);
 		if ("true".equals(property)) {
-			return Boolean.TRUE;
+			return Boolean.TRUE.booleanValue();
 		} else if ("false".equals(property)) {
-			return Boolean.FALSE;
+			return Boolean.FALSE.booleanValue();
 		}
-		return null;
+		return true;
 	}
 
-	public static Boolean getBoolean(Properties properties, String key) {
+	public static boolean getBoolean(Properties properties, String key) {
 		String property = properties.getProperty(key);
 		if ("true".equals(property)) {
-			return Boolean.TRUE;
+			return Boolean.TRUE.booleanValue();
 		} else if ("false".equals(property)) {
-			return Boolean.FALSE;
+			return Boolean.FALSE.booleanValue();
 		}
-		return null;
+		return true;
 	}
 
 	public static Integer getInteger(String key) {

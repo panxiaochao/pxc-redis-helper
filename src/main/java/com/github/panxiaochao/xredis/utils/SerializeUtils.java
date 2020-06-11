@@ -29,7 +29,7 @@ public class SerializeUtils {
 				objectOutputStream.flush();
 				result = byteStream.toByteArray();
 			} catch (Throwable ex) {
-				throw new Exception("Failed to serialize", ex);
+				log.error("Failed to serialize", ex);
 			}
 		} catch (Exception ex) {
 			log.error("Failed to serialize", ex);

@@ -3,6 +3,10 @@ package com.github.panxiaochao.xredis.service;
 import java.util.List;
 import java.util.Map;
 
+import com.github.panxiaochao.xredis.utils.JRedisUtils;
+
+import redis.clients.jedis.Jedis;
+
 public interface JRedisService {
 
 	/**
@@ -68,13 +72,15 @@ public interface JRedisService {
 
 	/**
 	 * 根据key 获取存储对象
-	 * @param key 键值
+	 * 
+	 * @param key
+	 *            键值
 	 * @return 返回值
 	 */
 	public <T> T getObject(String key);
 
 	// public void setString(String key, String value);
-	/**F
+	/**
 	 * 将字符串值 value 关联到 key ，如果 key 已经持有其他值， SET 就覆写旧值， 无视类型。
 	 * 
 	 * @param key
@@ -358,6 +364,78 @@ public interface JRedisService {
 	 * @return 返回值
 	 */
 	public long delMapHash(String key, String... field);
+
+	/**
+	 * <p>
+	 * 将一个或多个值 value 插入到列表 key 的表头，各个 value值按从左到右的顺序依次插入到表头
+	 * </p>
+	 * <p>
+	 * 返回值为列表长度
+	 * </p>
+	 * 
+	 * @param key
+	 *            键值
+	 * @param value
+	 *            值
+	 * @return 返回值
+	 */
+	public long setLpush(String key, String... value);
+
+	/**
+	 * <p>
+	 * 将一个或多个值 value 插入到列表 key 的表头，各个 value值按从右到左的顺序依次插入到表头
+	 * </p>
+	 * <p>
+	 * 返回值为列表长度
+	 * </p>
+	 * 
+	 * @param key
+	 *            键值
+	 * @param value
+	 *            值
+	 * @return 返回值
+	 */
+	public long setRpush(String key, String... value);
+
+	/**
+	 * 移除并返回列表 key 的头元素
+	 * 
+	 * @param key
+	 *            键值
+	 * @return 返回值
+	 */
+	public String getLpop(String key);
+
+	/**
+	 * 移除并返回列表 key 的尾元素
+	 * 
+	 * @param key
+	 *            键值
+	 * @return 返回值
+	 */
+	public String getRpop(String key);
+
+	/**
+	 * 返回列表 key 的长度
+	 * 
+	 * @param key
+	 *            键值
+	 * @return 返回值
+	 */
+	public long getLsize(String key);
+
+	/**
+	 * 返回列表 key 中指定区间内的元素，区间以偏移量 start 和 stop 指定
+	 * 
+	 * @param key
+	 *            键值
+	 * @param start
+	 *            起始位置
+	 * @param end
+	 *            截止位置
+	 * @return 返回值
+	 */
+	public List<String> getLrange(String key, long start, long end);
 
 	/**
 	 * Redis性能监控参数

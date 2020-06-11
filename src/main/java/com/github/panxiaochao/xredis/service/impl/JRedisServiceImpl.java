@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.github.panxiaochao.xredis.service.JRedisService;
@@ -18,7 +19,7 @@ import redis.clients.jedis.Pipeline;
 
 @Service("jRedisService")
 public class JRedisServiceImpl implements JRedisService {
-
+	private static final Logger log = Logger.getLogger(JRedisServiceImpl.class);
 	private static int EXPIRE = JRedisUtils.EXPIRE;
 
 	public void del(String... key) {
@@ -27,7 +28,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				jedis.del(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -40,7 +41,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				jedis.del(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -54,7 +55,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				flag = jedis.exists(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -74,41 +75,42 @@ public class JRedisServiceImpl implements JRedisService {
 		setObject(key, value, true, seconds);
 	}
 
-	public void setObject(String key, Object value, boolean isExpire, int seconds) {
+	private void setObject(String key, Object value, boolean isExpire, int seconds) {
 		Jedis jedis = JRedisUtils.getJedis();
 		if (jedis != null) {
 			try {
-				jedis.set(key.getBytes(), SerializeUtils.serialize(value));
 				if (isExpire) {
-					jedis.expire(key.getBytes(), seconds);
+					jedis.setex(key.getBytes(), seconds, SerializeUtils.serialize(value));
+				} else {
+					jedis.set(key.getBytes(), SerializeUtils.serialize(value));
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getObject(String key) {
+	public Object getObject(String key) {
+		Object obj = null;
 		Jedis jedis = JRedisUtils.getJedis();
 		byte[] byt = null;
 		if (jedis != null) {
 			try {
 				byt = jedis.get(key.getBytes());
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
 			if (null == byt) {
-				return null;
+				return obj;
 			} else {
-				return (T) SerializeUtils.unserialize(byt);
+				return SerializeUtils.unserialize(byt);
 			}
 		}
-		return null;
+		return obj;
 	}
 
 	public void setString(String key, String value) {
@@ -135,7 +137,7 @@ public class JRedisServiceImpl implements JRedisService {
 				}
 				pipeline.sync();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -148,7 +150,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				return jedis.setnx(key, value).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -175,7 +177,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.get(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -186,6 +188,24 @@ public class JRedisServiceImpl implements JRedisService {
 		return value;
 	}
 
+	public Integer getInteger(String key) {
+		Jedis jedis = JRedisUtils.getJedis();
+		String value = "";
+		if (jedis != null) {
+			try {
+				value = jedis.get(key);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		return Integer.valueOf(value);
+	}
+
 	public List<String> getSring(String... key) {
 		Jedis jedis = JRedisUtils.getJedis();
 		List<String> value = null;
@@ -193,7 +213,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.mget(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -208,7 +228,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.incr(key).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -223,7 +243,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.incrBy(key, increment).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -238,7 +258,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.decr(key).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -253,7 +273,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.decrBy(key, decrement).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -268,7 +288,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				value = jedis.strlen(key).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -283,7 +303,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hset(key, field, value).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -298,7 +318,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hsetnx(key, field, value).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -313,7 +333,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hmset(key, map);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -328,7 +348,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hget(key, field);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -343,7 +363,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hmget(key, fields);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -358,7 +378,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hgetAll(key);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -373,7 +393,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hexists(key, field).booleanValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -388,7 +408,97 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.hdel(key, fields).longValue();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public long setLpush(String key, String... value) {
+		Jedis jedis = JRedisUtils.getJedis();
+		long result = 0;
+		if (jedis != null) {
+			try {
+				result = jedis.lpush(key, value);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public long setRpush(String key, String... value) {
+		Jedis jedis = JRedisUtils.getJedis();
+		long result = 0;
+		if (jedis != null) {
+			try {
+				result = jedis.rpush(key, value);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public String getLpop(String key) {
+		Jedis jedis = JRedisUtils.getJedis();
+		String result = "";
+		if (jedis != null) {
+			try {
+				result = jedis.lpop(key);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public String getRpop(String key) {
+		Jedis jedis = JRedisUtils.getJedis();
+		String result = "";
+		if (jedis != null) {
+			try {
+				result = jedis.rpop(key);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public long getLsize(String key) {
+		Jedis jedis = JRedisUtils.getJedis();
+		long result = 0;
+		if (jedis != null) {
+			try {
+				result = jedis.llen(key);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
+			} finally {
+				JRedisUtils.close(jedis);
+			}
+		}
+		return result;
+	}
+
+	public List<String> getLrange(String key, long start, long end) {
+		Jedis jedis = JRedisUtils.getJedis();
+		List<String> result = null;
+		if (jedis != null) {
+			try {
+				result = jedis.lrange(key, start, end);
+			} catch (Exception e) {
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -403,7 +513,7 @@ public class JRedisServiceImpl implements JRedisService {
 			try {
 				result = jedis.info();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			} finally {
 				JRedisUtils.close(jedis);
 			}
@@ -416,7 +526,7 @@ public class JRedisServiceImpl implements JRedisService {
 				proper.remove("config_file");
 				proper.remove("executable");
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("JRedisServiceImpl error:" + e.getMessage(), e);
 			}
 			return proper.toString();
 		}
