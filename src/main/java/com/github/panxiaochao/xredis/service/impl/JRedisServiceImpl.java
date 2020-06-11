@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.github.panxiaochao.xredis.service.JRedisService;
@@ -17,9 +16,12 @@ import com.github.panxiaochao.xredis.utils.SerializeUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service("jRedisService")
 public class JRedisServiceImpl implements JRedisService {
-	private static final Logger log = Logger.getLogger(JRedisServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(JRedisServiceImpl.class);
 	private static int EXPIRE = JRedisUtils.EXPIRE;
 
 	public void del(String... key) {

@@ -6,10 +6,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.panxiaochao.xredis.service.impl.JRedisServiceImpl;
 
 public class SerializeUtils {
-	private static final Logger log = Logger.getLogger(SerializeUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(SerializeUtils.class);
 
 	public static byte[] serialize(Object object) {
 		byte[] result = null;

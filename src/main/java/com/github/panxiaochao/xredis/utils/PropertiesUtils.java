@@ -9,10 +9,13 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.panxiaochao.xredis.service.impl.JRedisServiceImpl;
 
 public class PropertiesUtils {
-	private static final Logger log = Logger.getLogger(PropertiesUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(PropertiesUtils.class);
 	private static final Properties PROPERTIES_MAPPING = new Properties();
 	private static final String PROPERTIES_FILE = "pxc-redis.properties";
 

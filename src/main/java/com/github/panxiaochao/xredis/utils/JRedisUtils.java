@@ -1,6 +1,9 @@
 package com.github.panxiaochao.xredis.utils;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.panxiaochao.xredis.service.impl.JRedisServiceImpl;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -12,7 +15,7 @@ import redis.clients.jedis.Pipeline;
  * 参数配置，参考：https://help.aliyun.com/document_detail/98726.html#section-m2c-5kr-zfb
  */
 public class JRedisUtils {
-	private static final Logger log = Logger.getLogger(JRedisUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(JRedisUtils.class);
 	private static JedisPool jedisPool = null;
 	// Redis服务器IP
 	private static String ADDR = PropertiesUtils.getString("redis.addr");
@@ -164,14 +167,14 @@ public class JRedisUtils {
 				try {
 					String result = "";
 					Pipeline pipeline = jedis.pipelined();
-					if (true) {
+					//if (true) {
 						// result = jedis.setex(i + "", 100, i + "");
-						result = jedis.set(i + "", i + "", "NX", "EX", 100);
-					} else {
+					//	result = jedis.set(i + "", i + "", "NX", "EX", 100);
+					//} else {
 						result = jedis.set(i + "", i + "");
-					}
+					//}
 					pipeline.sync();
-					System.out.println(result);
+					log.info(result);
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {

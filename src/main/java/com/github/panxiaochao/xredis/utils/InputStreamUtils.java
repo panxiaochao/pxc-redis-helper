@@ -10,10 +10,13 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.panxiaochao.xredis.service.impl.JRedisServiceImpl;
 
 public class InputStreamUtils {
-	private static final Logger log = Logger.getLogger(InputStreamUtils.class);
+	private static final Logger log = LoggerFactory.getLogger(InputStreamUtils.class);
 	public final static int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	public static String read(InputStream in) {

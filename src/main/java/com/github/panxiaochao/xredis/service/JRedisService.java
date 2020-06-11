@@ -77,7 +77,7 @@ public interface JRedisService {
 	 *            键值
 	 * @return 返回值
 	 */
-	public <T> T getObject(String key);
+	public Object getObject(String key);
 
 	// public void setString(String key, String value);
 	/**

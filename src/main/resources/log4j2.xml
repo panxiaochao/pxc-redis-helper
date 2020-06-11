@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<Properties>
+		<!-- 文件输出格式 -->
+		<property name="patternLayout">[BPMIS][%p][%d{yyyy-MM-dd HH:mm:ss}] - [%m] - %F\:\:%M\:\:%L%n</property>
+	</Properties>
+	<appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT"
+				onMismatch="DENY" />
+			<PatternLayout pattern="${patternLayout}" />
+		</Console>
+	</appenders>
+	<loggers>
+		<!--监控系统信息 -->
+		<logger name="org.springframework" level="info" additivity="false">
+			<AppenderRef ref="Console" />
+		</logger>
+		<root level="INFO">
+			<appender-ref ref="Console" />
+		</root>
+	</loggers>
+</configuration>
